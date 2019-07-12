@@ -1,0 +1,179 @@
+﻿<Window x:Class="FlowCtrl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:map="clr-namespace:MapControl"
+        xmlns:local="clr-namespace:FlowCtrl"
+        xmlns:ctrl="clr-namespace:FlowCtrl.View.Ctrl"
+        Title="Flow Control" Height="850" Width="925" Icon="PolygonIcon2.ico">
+    <Window.Resources>
+        <map:TileLayerCollection x:Key="TileLayers">
+            <map:TileLayer SourceName="OpenStreetMap" Description="© {y} OpenStreetMap Contributors, CC-BY-SA"
+                           TileSource="http://{c}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+            <map:TileLayer SourceName="Satellite Hybrid" Description="Bing Maps - © {y} Microsoft Corporation" Background="#FF3F3F3F" Foreground="White"
+                           TileSource="http://ecn.t{i}.tiles.virtualearth.net/tiles/h{q}.jpeg?g=0&amp;stl=h" MaxZoomLevel="20"/>
+        </map:TileLayerCollection>
+        <CollectionViewSource x:Key="TileLayersViewSource" Source="{StaticResource TileLayers}"/>
+        <DataTemplate x:Key="PolygonItemTemplate">
+            <map:MapPolyline Locations="{Binding Locations}" Stroke="Black" StrokeThickness="1" Fill="{Binding Fill}" Opacity="0.6" IsClosed="True"
+                             Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}"
+                             CommandParameter="{Binding}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="SwathTemplate">
+            <map:MapPolyline Locations="{Binding Locations}" Stroke="Blue" StrokeThickness="1" Fill="{Binding Fill}" Opacity="0.9" IsClosed="True"/>
+        </DataTemplate>
+        <DataTemplate x:Key="AB_LineItemTemplate">
+            <map:MapPolyline Locations="{Binding Locations}" Stroke="Red" StrokeThickness="3" Opacity="0.6"></map:MapPolyline>
+        </DataTemplate>
+        <DataTemplate x:Key="GuideLineTemplate">
+            <map:MapPolyline Locations="{Binding Locations}" Stroke="Red" StrokeThickness="1" Opacity="0.9"></map:MapPolyline>
+        </DataTemplate>
+        <Style x:Key="LabelItemStyle" TargetType="map:MapItem">
+            <Setter Property="map:MapPanel.Location" Value="{Binding CaptionLocation}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="map:MapItem">
+                        <map:MapLabel HorizontalContentAlignment="Center">
+                            <map:MapLabel.Content>
+                                <TextBlock Text="{Binding FieldCaption}" TextAlignment="Center"></TextBlock>
+                            </map:MapLabel.Content>
+                        </map:MapLabel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="FlagItemStyle" TargetType="map:MapItem">
+            <Setter Property="map:MapPanel.Location" Value="{Binding Location}"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="map:MapItem">
+                        <map:MapLabel HorizontalContentAlignment="Left">
+                            <map:MapLabel.Content>
+                                <ctrl:Flag FlagText="{Binding Text}"></ctrl:Flag>
+                            </map:MapLabel.Content>
+                        </map:MapLabel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="346"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu Height="25" VerticalAlignment="Top" Grid.ColumnSpan="3" Grid.Row="0">
+            <MenuItem Header="File" Name="menuFile">
+                <MenuItem Name="menuOpen" Header="Open" Click="OpenKml"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Field" Name="menuField">
+                <MenuItem Name="menuDrawField" Header="Draw field" Click="DrawField"></MenuItem>
+                <MenuItem Name="menuStopDrawField" Header="Complete drawing" Click="StopDrawingField" IsEnabled="False"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Language" Name="menuLanguage">
+                <MenuItem Name="menuEnglish" Header="English" IsChecked="True" Click="menuEnglish_Click"></MenuItem>
+                <MenuItem Name="menuRussian" Header="Русский" Click="menuRussian_Click"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <GridSplitter Grid.Column="1" Background="LightGray" Width="10" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Row="1" />
+        <map:Map x:Name="mainMap" ZoomLevel="5" Center="49,30" Grid.Column="2" Grid.Row="1" TileLayer="{Binding Source={StaticResource TileLayersViewSource}, Path=CurrentItem}">
+            <map:MapItemsControl ItemsSource="{Binding Fields}" ItemTemplate="{StaticResource PolygonItemTemplate}" ></map:MapItemsControl>
+            <map:MapItemsControl ItemsSource="{Binding Swathes}" ItemTemplate="{StaticResource SwathTemplate}"/>
+            <map:MapItemsControl ItemsSource="{Binding GuidanceLines}" ItemTemplate="{StaticResource GuideLineTemplate}"/>
+            <map:MapItemsControl ItemsSource="{Binding AB_Lines}" ItemTemplate="{StaticResource AB_LineItemTemplate}"/>
+            <map:MapItemsControl ItemsSource="{Binding Flags}" ItemContainerStyle="{StaticResource FlagItemStyle}"/>
+        </map:Map>
+        <Button x:Name="btnPlus" Content="+" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" Grid.Column="2" VerticalAlignment="Top" Width="25" Height="25" Click="btnPlus_Click"/>
+        <Button x:Name="btnMinus" Content="-" HorizontalAlignment="Left" Margin="10,40,0,0" Grid.Row="1" Grid.Column="2" VerticalAlignment="Top" Width="25" Height="25" Click="btnMinus_Click"/>
+        <ComboBox ToolTip="Tile Layer" Margin="54,10,0,0" VerticalAlignment="Top" DisplayMemberPath="SourceName" Grid.Row="1" Grid.Column="2"
+                          SelectedIndex="0" HorizontalAlignment="Left" Width="166" ItemsSource="{Binding Source={StaticResource TileLayersViewSource}}" Height="25"/>
+        <Image HorizontalAlignment="Left" Opacity="1" Height="206" Grid.Row="1" VerticalAlignment="Top" Width="346" Source="FIQtop.png" Margin="0,0,0,0"/>
+        <ToggleButton Content="A" x:Name="btnA" HorizontalAlignment="Left" Margin="10,219,0,0" Grid.Row="1" VerticalAlignment="Top" Width="23" Checked="btnA_Checked" Unchecked="btnA_Unchecked"/>
+        <ToggleButton Content="B" x:Name="btnB" HorizontalAlignment="Left" Margin="38,219,0,0" Grid.Row="1" VerticalAlignment="Top" Width="23" Checked="btnB_Checked" Unchecked="btnB_Unchecked"/>
+        <TextBlock Name="lblImplementWidth" HorizontalAlignment="Left" Margin="10,246,0,0" TextWrapping="Wrap" Text="Implement width, m" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="121"/>
+        <TextBox TextAlignment="Right" x:Name="txtBoxWidth" HorizontalAlignment="Left" Height="23" Margin="131,239,0,0" TextWrapping="Wrap" Text="{Binding ImplementWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="61" Grid.Row="1"/>
+        <TextBlock Name="lblMaterial" HorizontalAlignment="Left" Margin="10,274,0,0" TextWrapping="Wrap" Text="Material, $/ha" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="83"/>
+        <TextBox TextAlignment="Right" x:Name="txtBoxCost" HorizontalAlignment="Left" Height="23" Margin="131,267,0,0" TextWrapping="Wrap" Text="{Binding CostHa, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="61" Grid.Row="1"/>
+        <Button Name="btnSelectedField" Command="{Binding ProcessFieldCmd}" Content="Selected field" HorizontalAlignment="Left" Margin="232,482,0,0" VerticalAlignment="Top" Width="104" Height="22" Grid.Row="1"/>
+        <TextBlock Name="lblFieldArea" HorizontalAlignment="Left" Margin="10,296,0,0" TextWrapping="Wrap" Text="Field area, ha: " VerticalAlignment="Top" Height="16" Grid.Row="1" Width="145"/>
+        <TextBlock Name="lblAppliedArea" HorizontalAlignment="Left" Margin="10,317,0,0" TextWrapping="Wrap" Text="Applied area, ha: " VerticalAlignment="Top" Height="16" Grid.Row="1" Width="145"/>
+        <TextBlock Name="lblSavings" HorizontalAlignment="Left" Margin="10,365,0,0" TextWrapping="Wrap" Text="Saving, $:" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="83"/>
+        <Button Name="btnAllFields" Command="{Binding DoAllFieldCmd}" Content="All fields" IsEnabled="True" HorizontalAlignment="Left" Margin="10,482,0,0" VerticalAlignment="Top" Width="104" Height="22" Grid.Row="1"/>
+        <DataGrid ItemsSource="{Binding AnalysisResult}" Margin="10,509,10,10" AutoGenerateColumns="False" x:Name="dataGridFields" Grid.Row="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="columnName" Header="Field" Binding="{Binding FieldName}"/>
+                <DataGridTextColumn x:Name="columnArea" Header="Area, ha" Binding="{Binding FieldArea, StringFormat=F02}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn x:Name="columnApplied" Header="Applied, ha" Binding="{Binding AppliedArea, StringFormat=F02}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn x:Name="columnSavings" Header="Saving, $" Binding="{Binding SectionSaving, StringFormat=F00}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn x:Name="columnLoss" Header="Loss, $" Binding="{Binding SectionLoss, StringFormat=F00}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <TextBlock HorizontalAlignment="Left" TextAlignment="Right" Margin="160,296,0,0" Grid.Row="1" Text="{Binding FieldArea, StringFormat='F02'}" VerticalAlignment="Top" Width="83"/>
+        <TextBlock HorizontalAlignment="Left" TextAlignment="Right" Margin="160,317,0,0" Grid.Row="1" Text="{Binding AppliedArea, StringFormat='F02'}" VerticalAlignment="Top" Width="83"/>
+        <TextBlock HorizontalAlignment="Left" TextAlignment="Right" Margin="149,365,0,0" Grid.Row="1" Text="{Binding SectionSaving, StringFormat='F00'}" VerticalAlignment="Top" Width="83"/>
+        <Label Name="lblAutoSecCtrl" Content="Automatic Section Control" HorizontalAlignment="Left" Margin="150,215,0,0" Grid.Row="1" VerticalAlignment="Top" Width="180" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+        <TextBlock TextAlignment="Center" x:Name="txtNumberOfSections" HorizontalAlignment="Left" Margin="199,241,0,0" TextWrapping="Wrap" Text="Number of sections:" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="121"/>
+        <Slider Value="{Binding NumberOfSections, Mode=TwoWay}" IsSnapToTickEnabled="True" Name="sliderNumberOfSections" Minimum="1" Maximum="48" HorizontalAlignment="Left" Margin="199,257,0,0" Grid.Row="1" VerticalAlignment="Top" Width="142" SmallChange="1"/>
+        <TextBlock Text="{Binding ElementName=sliderNumberOfSections, Path=Value}" TextAlignment="Center" x:Name="lblNumberOfSections" HorizontalAlignment="Left" Margin="325,241,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="16"/>
+        <TextBlock x:Name="lblLoss" HorizontalAlignment="Left" Margin="10,386,0,0" TextWrapping="Wrap" Text="Loss, $:" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="83"/>
+        <TextBlock HorizontalAlignment="Left" TextAlignment="Right" Margin="149,386,0,0" Grid.Row="1" Text="{Binding SectionLoss, StringFormat=F00}" VerticalAlignment="Top" Width="83"/>
+        <Label Content="Trimble" HorizontalAlignment="Left" Margin="150,202,0,0" Grid.Row="1" VerticalAlignment="Top" Width="180" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+
+        <TextBlock HorizontalAlignment="Left" TextAlignment="Right" Margin="279,386,0,0" Grid.Row="1" Text="{Binding NozzleLoss, StringFormat=F00}" VerticalAlignment="Top" Width="62"/>
+        <TextBlock Name="lblSectionControl" TextAlignment="Right" Text="Section control:" HorizontalAlignment="Left" Margin="100,343,0,0" Grid.Row="1" VerticalAlignment="Top" Width="116"/>
+        <TextBlock Name="lblNozzleControl" TextAlignment="Right" Text="Nozzle control:" HorizontalAlignment="Left" Margin="237,343,0,0" Grid.Row="1" VerticalAlignment="Top" Width="83"/>
+        <TextBlock TextAlignment="Right" Text="{Binding Value, ElementName=sliderNumberOfSections}" HorizontalAlignment="Left" Margin="216,343,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="16"/>
+        <TextBlock TextAlignment="Right" Text="{Binding NumberOfNozzles}" HorizontalAlignment="Left" Margin="325,343,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="16"/>
+        <TextBlock x:Name="lblSectionCtrlPrice" HorizontalAlignment="Left" Margin="10,429,0,0" TextWrapping="Wrap" Text="Section control price, $:" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="158"/>
+        <TextBox TextAlignment="Right" HorizontalAlignment="Left" Height="23" Margin="173,427,0,0" TextWrapping="Wrap" Text="{Binding SectionControlPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="61" Grid.Row="1"/>
+        <TextBlock x:Name="lblNozzleCtrlPrice" HorizontalAlignment="Left" Margin="10,456,0,0" TextWrapping="Wrap" Text="Nozzle control price, $:" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="158"/>
+        <TextBox HorizontalAlignment="Left" TextAlignment="Right" Height="23" Margin="173,454,0,0" TextWrapping="Wrap" Text="{Binding NozzleControlPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="61" Grid.Row="1"/>
+        <TextBlock HorizontalAlignment="Left" TextAlignment="Right" Margin="265,429,0,0" TextWrapping="Wrap" Text="{Binding SectionPaybackHa, StringFormat=F00}" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="71"/>
+        <TextBlock HorizontalAlignment="Left" TextAlignment="Right" Margin="265,456,0,0" TextWrapping="Wrap" Text="{Binding NozzlePaybackHa, StringFormat=F00}" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="71"/>
+        <TextBlock x:Name="lblPayBack" TextAlignment="Right" HorizontalAlignment="Left" Margin="38,408,0,0" TextWrapping="Wrap" Text="Payback, ha" VerticalAlignment="Top" Height="16" Grid.Row="1" Width="298"/>
+
+        <Grid Margin="232,365,0,0" Height="21" Grid.Row="1" HorizontalAlignment="Left" Width="109" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Name="lblAdditional" TextAlignment="Right" Text="additional " TextWrapping="Wrap" Grid.Column="1" />
+            <TextBlock TextAlignment="Right" Text="{Binding NozzleSaving, StringFormat=F00}" Grid.Column="2" />
+        </Grid>
+
+
+    </Grid>
+</Window>

@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{785B2C43-C3ED-4711-A5FC-69625B9BB2F4}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FlowCtrl</RootNamespace>
+    <AssemblyName>FlowCtrl</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>PolygonIcon2.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="GpsMath\GeoPoint.cs" />
+    <Compile Include="GpsMath\LineDefinition.cs" />
+    <Compile Include="GpsMath\LocationExtension.cs" />
+    <Compile Include="GpsMath\MyPoint3D.cs" />
+    <Compile Include="GpsMath\PointExtension.cs" />
+    <Compile Include="GpsMath\Utility.cs" />
+    <Compile Include="GpsMath\WGS84.cs" />
+    <Compile Include="View\Ctrl\Flag.xaml.cs">
+      <DependentUpon>Flag.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VM\FieldVM.cs" />
+    <Compile Include="VM\FlagVM.cs" />
+    <Compile Include="VM\LineVM.cs" />
+    <Compile Include="VM\MainMapVM.cs" />
+    <Compile Include="VM\PolygonVM.cs" />
+    <Compile Include="VM\ViewModelBase.cs" />
+    <Compile Include="VM\ViewModelCommand.cs" />
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Ctrl\Flag.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MapControl\GlyphRunText.cs" />
+    <Compile Include="MapControl\ImageTileSource.cs" />
+    <Compile Include="MapControl\ImageTileSource.WPF.cs" />
+    <Compile Include="MapControl\Int32Rect.cs" />
+    <Compile Include="MapControl\Location.cs" />
+    <Compile Include="MapControl\LocationCollection.cs" />
+    <Compile Include="MapControl\LocationCollectionConverter.cs" />
+    <Compile Include="MapControl\LocationConverter.cs" />
+    <Compile Include="MapControl\Map.WPF.cs" />
+    <Compile Include="MapControl\MapBase.cs" />
+    <Compile Include="MapControl\MapBase.WPF.cs" />
+    <Compile Include="MapControl\MapGraticule.cs" />
+    <Compile Include="MapControl\MapGraticule.WPF.cs" />
+    <Compile Include="MapControl\MapImage.cs" />
+    <Compile Include="MapControl\MapImage.WPF.cs" />
+    <Compile Include="MapControl\MapImageLayer.cs" />
+    <Compile Include="MapControl\MapItem.WPF.cs" />
+    <Compile Include="MapControl\MapItemsControl.WPF.cs" />
+    <Compile Include="MapControl\MapLabel.cs" />
+    <Compile Include="MapControl\MapOverlay.cs" />
+    <Compile Include="MapControl\MapPanel.cs" />
+    <Compile Include="MapControl\MapPanel.WPF.cs" />
+    <Compile Include="MapControl\MapPath.cs" />
+    <Compile Include="MapControl\MapPath.WPF.cs" />
+    <Compile Include="MapControl\MapPolyline.cs" />
+    <Compile Include="MapControl\MapPolyline.WPF.cs" />
+    <Compile Include="MapControl\MapRectangle.cs" />
+    <Compile Include="MapControl\MapRectangle.WPF.cs" />
+    <Compile Include="MapControl\MapScale.cs" />
+    <Compile Include="MapControl\MapTransform.cs" />
+    <Compile Include="MapControl\MatrixEx.cs" />
+    <Compile Include="MapControl\MercatorTransform.cs" />
+    <Compile Include="MapControl\Pushpin.WPF.cs" />
+    <Compile Include="MapControl\Tile.cs" />
+    <Compile Include="MapControl\Tile.WPF.cs" />
+    <Compile Include="MapControl\TileContainer.cs" />
+    <Compile Include="MapControl\TileContainer.WPF.cs" />
+    <Compile Include="MapControl\TileImageLoader.WPF.cs" />
+    <Compile Include="MapControl\TileLayer.cs" />
+    <Compile Include="MapControl\TileLayer.WPF.cs" />
+    <Compile Include="MapControl\TileLayerCollection.cs" />
+    <Compile Include="MapControl\TileSource.cs" />
+    <Compile Include="MapControl\TileSourceConverter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="PolygonIcon2.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="trimble-logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="FIQtop.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
